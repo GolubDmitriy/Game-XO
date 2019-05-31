@@ -1,7 +1,7 @@
 let player = 'X';
 let gameField = [];
-const lengthGameField = 4
-const numberCellsToWin = 4
+const lengthGameField = 4;
+const numberCellsToWin = 3;
 
 drawingGameField(lengthGameField);
 
@@ -13,7 +13,7 @@ function gameStep(event) {
     if (!event.target.innerHTML) {
         event.target.innerHTML = player;
         gameFieldAddValue([event.target.dataset.value]);
-        if (checkGame()) {
+        if (testCheck()) {
             console.log('win: ', player)
             return
         }
@@ -37,23 +37,23 @@ function checkGame() {
     return checkDiagonal() || checkLines();
 }
 
-function checkDiagonal() {
+function checkDiagonal(positionCheckX, positionCheckY) {
     let rightDiagonal = true;
     let leftDiagonal = true;
     for (let i = 0; i < numberCellsToWin; ++i) {
-        rightDiagonal = rightDiagonal && gameField[i][i] === player;
-        leftDiagonal = leftDiagonal && gameField[numberCellsToWin - i - 1][i] === player;
+        rightDiagonal = rightDiagonal && gameField[positionCheckX + i][positionCheckY + i] === player;
+        leftDiagonal = leftDiagonal && gameField[numberCellsToWin + positionCheckX - i - 1][positionCheckY + i] === player;
     } 
     return rightDiagonal || leftDiagonal;
 }
 
-function checkLines() {
+function checkLines(positionCheckX, positionCheckY) {
     for (let x = 0; x < numberCellsToWin; ++x) {
         let vertical = true;
         let horizontal = true;
         for (let y = 0; y < numberCellsToWin; ++y) {
-            vertical = vertical && gameField[y][x] === player;
-            horizontal = horizontal && gameField[x][y] === player;
+            vertical = vertical && gameField[y + positionCheckY][x + positionCheckX] === player;
+            horizontal = horizontal && gameField[x + positionCheckX][y + positionCheckY] === player;
         }
         if (vertical || horizontal) {
             return true;
@@ -74,5 +74,15 @@ function drawingGameField(numberCells) {
             row.appendChild(cell);
         }
         document.body.appendChild(row);
+    }
+}
+
+function testCheck() {
+    for (let i = 0; i <= gameField.length - numberCellsToWin; ++i) {
+        for (let j = 0; j <= gameField.length - numberCellsToWin; ++j) {
+            if (checkDiagonal(i, j) || checkLines(i, j)) {
+                return true
+            }
+        }
     }
 }
