@@ -1,13 +1,11 @@
-const cells = document.getElementsByClassName('cell');
 let player = 'X';
-let gameField = []
+let gameField = [];
+const lengthGameField = 4
 
-for (let i = 0; i < 3; ++i) {
+drawingGameField(lengthGameField);
+
+for (let i = 0; i < lengthGameField; ++i) {
     gameField.push([])
-}
-
-for (cell of cells) {
-    cell.addEventListener('click', gameStep);
 }
 
 function gameStep(event) {
@@ -59,5 +57,21 @@ function checkLines() {
         if (vertical || horizontal) {
             return true;
         }
+    }
+}
+
+function drawingGameField(numberCells) {
+    let dataValue = 0;
+    for (let i = 0; i < numberCells; ++i) {
+        const row = document.createElement('div');
+        row.classList.add('row');
+        for (let j = 0; j < numberCells; ++j) {
+            const cell = document.createElement('div');
+            cell.classList.add('cell');
+            cell.setAttribute('data-value', dataValue++);
+            cell.addEventListener('click', gameStep)
+            row.appendChild(cell);
+        }
+        document.body.appendChild(row);
     }
 }
