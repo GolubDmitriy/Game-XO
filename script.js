@@ -1,6 +1,7 @@
 let player = 'X';
 let gameField = [];
 const lengthGameField = 4
+const numberCellsToWin = 4
 
 drawingGameField(lengthGameField);
 
@@ -39,18 +40,18 @@ function checkGame() {
 function checkDiagonal() {
     let rightDiagonal = true;
     let leftDiagonal = true;
-    for (let i = 0; i < gameField.length; ++i) {
+    for (let i = 0; i < numberCellsToWin; ++i) {
         rightDiagonal = rightDiagonal && gameField[i][i] === player;
-        leftDiagonal = leftDiagonal && gameField[gameField.length - i - 1][i] === player;
+        leftDiagonal = leftDiagonal && gameField[numberCellsToWin - i - 1][i] === player;
     } 
     return rightDiagonal || leftDiagonal;
 }
 
 function checkLines() {
-    for (let x = 0; x < gameField.length; ++x) {
+    for (let x = 0; x < numberCellsToWin; ++x) {
         let vertical = true;
         let horizontal = true;
-        for (let y = 0; y < gameField.length; ++y) {
+        for (let y = 0; y < numberCellsToWin; ++y) {
             vertical = vertical && gameField[y][x] === player;
             horizontal = horizontal && gameField[x][y] === player;
         }
