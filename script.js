@@ -1,12 +1,12 @@
 let player = 'X';
 let gameField = [];
-const lengthGameField = 4;
-const numberCellsToWin = 3;
+let lengthGameField = 4;
+let numberCellsToWin = 3;
 const btnGameReset = document.getElementsByClassName('btn-game-reset')[0];
 const btnChangeSettings = document.getElementById('change-settings');
 const main = document.getElementsByClassName('main')[0];
 
-btnChangeSettings.addEventListener('click', clearGameField);
+btnChangeSettings.addEventListener('click', changeSettings)
 
 btnGameReset.addEventListener('click', gameReset);
 
@@ -117,4 +117,16 @@ function gameReset() {
 
 function clearGameField() {
     main.innerHTML = '';
+    gameField= [];
+    for (let i = 0; i < lengthGameField; ++i) {
+        gameField.push([])
+    }
+}
+
+function changeSettings() {
+    gameReset();
+    lengthGameField = Number(document.getElementById('size-field').value);
+    numberCellsToWin = Number(document.getElementById('number-line-to-win').value);
+    clearGameField();
+    drawingGameField(lengthGameField);
 }
