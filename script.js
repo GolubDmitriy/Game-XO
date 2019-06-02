@@ -14,8 +14,9 @@ function gameStep(event) {
         event.target.innerHTML = player;
         gameFieldAddValue([event.target.dataset.value]);
         if (testCheck()) {
-            console.log('win: ', player)
-            return
+            console.log('win: ', player);
+            endRound();
+            return;
         }
         changePlayer();
     }
@@ -84,5 +85,13 @@ function testCheck() {
                 return true
             }
         }
+    }
+}
+
+function endRound() {
+    const cells = document.getElementsByClassName('cell');
+    console.log(cells)
+    for (let cell of cells) {
+        cell.removeEventListener('click', gameStep);
     }
 }
