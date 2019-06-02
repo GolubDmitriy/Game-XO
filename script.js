@@ -2,6 +2,9 @@ let player = 'X';
 let gameField = [];
 const lengthGameField = 4;
 const numberCellsToWin = 3;
+const btnGameReset = document.getElementsByClassName('btn-game-reset')[0];
+
+btnGameReset.addEventListener('click', gameReset);
 
 drawingGameField(lengthGameField);
 
@@ -93,5 +96,18 @@ function endRound() {
     const cells = document.getElementsByClassName('cell');
     for (let cell of cells) {
         cell.removeEventListener('click', gameStep);
+    }
+}
+
+function gameReset() {
+    const cells = document.getElementsByClassName('cell');
+    for (let cell of cells) {
+        cell.innerHTML = '';
+        cell.addEventListener('click', gameStep);
+    }
+    player = 'X';
+    gameField= [];
+    for (let i = 0; i < lengthGameField; ++i) {
+        gameField.push([])
     }
 }
