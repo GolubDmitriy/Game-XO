@@ -1,5 +1,5 @@
 let player = 'X';
-let gameField = [];
+let progressGame = [];
 let lengthGameField = 4;
 let numberCellsToWin = 3;
 const btnGameReset = document.getElementsByClassName('btn-game-reset')[0];
@@ -13,13 +13,13 @@ btnGameReset.addEventListener('click', gameReset);
 drawingGameField(lengthGameField);
 
 for (let i = 0; i < lengthGameField; ++i) {
-    gameField.push([])
+    progressGame.push([])
 }
 
 function gameStep(event) {
     if (!event.target.innerHTML) {
         event.target.innerHTML = player;
-        gameFieldAddValue([event.target.dataset.value]);
+        progressGameAdd([event.target.dataset.value]);
         if (testCheck()) {
             console.log('win: ', player);
             endRound();
@@ -37,8 +37,8 @@ function changePlayer() {
     }
 }
 
-function gameFieldAddValue(value) {
-    gameField[Math.floor(value / gameField.length)][value % gameField.length] = player
+function progressGameAdd(value) {
+    progressGame[Math.floor(value / progressGame.length)][value % progressGame.length] = player
 }
 
 function checkGame() {
@@ -49,8 +49,8 @@ function checkDiagonal(positionCheckX, positionCheckY) {
     let rightDiagonal = true;
     let leftDiagonal = true;
     for (let i = 0; i < numberCellsToWin; ++i) {
-        rightDiagonal = rightDiagonal && gameField[positionCheckX + i][positionCheckY + i] === player;
-        leftDiagonal = leftDiagonal && gameField[numberCellsToWin + positionCheckX - i - 1][positionCheckY + i] === player;
+        rightDiagonal = rightDiagonal && progressGame[positionCheckX + i][positionCheckY + i] === player;
+        leftDiagonal = leftDiagonal && progressGame[numberCellsToWin + positionCheckX - i - 1][positionCheckY + i] === player;
     } 
     return rightDiagonal || leftDiagonal;
 }
@@ -60,8 +60,8 @@ function checkLines(positionCheckX, positionCheckY) {
         let vertical = true;
         let horizontal = true;
         for (let y = 0; y < numberCellsToWin; ++y) {
-            vertical = vertical && gameField[y + positionCheckY][x + positionCheckX] === player;
-            horizontal = horizontal && gameField[x + positionCheckX][y + positionCheckY] === player;
+            vertical = vertical && progressGame[y + positionCheckY][x + positionCheckX] === player;
+            horizontal = horizontal && progressGame[x + positionCheckX][y + positionCheckY] === player;
         }
         if (vertical || horizontal) {
             return true;
@@ -86,8 +86,8 @@ function drawingGameField(numberCells) {
 }
 
 function testCheck() {
-    for (let i = 0; i <= gameField.length - numberCellsToWin; ++i) {
-        for (let j = 0; j <= gameField.length - numberCellsToWin; ++j) {
+    for (let i = 0; i <= progressGame.length - numberCellsToWin; ++i) {
+        for (let j = 0; j <= progressGame.length - numberCellsToWin; ++j) {
             if (checkDiagonal(i, j) || checkLines(i, j)) {
                 return true
             }
@@ -109,17 +109,17 @@ function gameReset() {
         cell.addEventListener('click', gameStep);
     }
     player = 'X';
-    gameField= [];
+    progressGame= [];
     for (let i = 0; i < lengthGameField; ++i) {
-        gameField.push([])
+        progressGame.push([])
     }
 }
 
 function clearGameField() {
     main.innerHTML = '';
-    gameField= [];
+    progressGame= [];
     for (let i = 0; i < lengthGameField; ++i) {
-        gameField.push([])
+        progressGame.push([])
     }
 }
 
