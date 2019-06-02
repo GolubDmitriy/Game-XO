@@ -63,6 +63,7 @@ function checkLines(positionCheckX, positionCheckY) {
 }
 
 function drawingGameField(numberCells) {
+    const main = document.getElementsByClassName('main')[0];
     let dataValue = 0;
     for (let i = 0; i < numberCells; ++i) {
         const row = document.createElement('div');
@@ -74,7 +75,7 @@ function drawingGameField(numberCells) {
             cell.addEventListener('click', gameStep)
             row.appendChild(cell);
         }
-        document.body.appendChild(row);
+        main.appendChild(row);
     }
 }
 
@@ -90,7 +91,6 @@ function testCheck() {
 
 function endRound() {
     const cells = document.getElementsByClassName('cell');
-    console.log(cells)
     for (let cell of cells) {
         cell.removeEventListener('click', gameStep);
     }
