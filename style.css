@@ -11,3 +11,8 @@
     flex-wrap: wrap;
     justify-content: center;
 }
+
+.btn-center {
+    text-align: center;
+    margin-top: 5px;
+}
