@@ -3,6 +3,10 @@ let gameField = [];
 const lengthGameField = 4;
 const numberCellsToWin = 3;
 const btnGameReset = document.getElementsByClassName('btn-game-reset')[0];
+const btnChangeSettings = document.getElementById('change-settings');
+const main = document.getElementsByClassName('main')[0];
+
+btnChangeSettings.addEventListener('click', clearGameField);
 
 btnGameReset.addEventListener('click', gameReset);
 
@@ -66,7 +70,6 @@ function checkLines(positionCheckX, positionCheckY) {
 }
 
 function drawingGameField(numberCells) {
-    const main = document.getElementsByClassName('main')[0];
     let dataValue = 0;
     for (let i = 0; i < numberCells; ++i) {
         const row = document.createElement('div');
@@ -110,4 +113,8 @@ function gameReset() {
     for (let i = 0; i < lengthGameField; ++i) {
         gameField.push([])
     }
+}
+
+function clearGameField() {
+    main.innerHTML = '';
 }
