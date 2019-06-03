@@ -1,132 +1,158 @@
-let player = 'X';
-let progressGame = [];
-let lengthGameField = 4;
-let numberCellsToWin = 3;
 const btnGameReset = document.getElementsByClassName('btn-game-reset')[0];
 const btnChangeSettings = document.getElementById('change-settings');
 const main = document.getElementsByClassName('main')[0];
 
-btnChangeSettings.addEventListener('click', changeSettings)
-
-btnGameReset.addEventListener('click', gameReset);
-
-drawingGameField(lengthGameField);
-
-for (let i = 0; i < lengthGameField; ++i) {
-    progressGame.push([])
-}
-
-function gameStep(event) {
-    if (!event.target.innerHTML) {
-        event.target.innerHTML = player;
-        progressGameAdd([event.target.dataset.value]);
-        if (testCheck()) {
-            console.log('win: ', player);
-            endRound();
-            return;
-        }
-        changePlayer();
+class GameField {
+    
+    constructor(lengthGameField, numberCellsToWin) {
+        this.lengthGameField =  lengthGameField;
+        this.numberCellsToWin = numberCellsToWin;
     }
-}
 
-function changePlayer() {
-    if (player === 'X') {
-        player = 'O';
-    } else {
-        player = 'X';
-    }
-}
-
-function progressGameAdd(value) {
-    progressGame[Math.floor(value / progressGame.length)][value % progressGame.length] = player
-}
-
-function checkGame() {
-    return checkDiagonal() || checkLines();
-}
-
-function checkDiagonal(positionCheckX, positionCheckY) {
-    let rightDiagonal = true;
-    let leftDiagonal = true;
-    for (let i = 0; i < numberCellsToWin; ++i) {
-        rightDiagonal = rightDiagonal && progressGame[positionCheckX + i][positionCheckY + i] === player;
-        leftDiagonal = leftDiagonal && progressGame[numberCellsToWin + positionCheckX - i - 1][positionCheckY + i] === player;
-    } 
-    return rightDiagonal || leftDiagonal;
-}
-
-function checkLines(positionCheckX, positionCheckY) {
-    for (let x = 0; x < numberCellsToWin; ++x) {
-        let vertical = true;
-        let horizontal = true;
-        for (let y = 0; y < numberCellsToWin; ++y) {
-            vertical = vertical && progressGame[y + positionCheckY][x + positionCheckX] === player;
-            horizontal = horizontal && progressGame[x + positionCheckX][y + positionCheckY] === player;
-        }
-        if (vertical || horizontal) {
-            return true;
+    drawingGameField(gameStep) {
+        let dataValue = 0;
+        for (let i = 0; i < this.lengthGameField; ++i) {
+            const row = document.createElement('div');
+            row.classList.add('row');
+            for (let j = 0; j < this.lengthGameField; ++j) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.setAttribute('data-value', dataValue++);
+                cell.addEventListener('click', gameStep)
+                row.appendChild(cell);
+            }
+            main.appendChild(row);
         }
     }
-}
 
-function drawingGameField(numberCells) {
-    let dataValue = 0;
-    for (let i = 0; i < numberCells; ++i) {
-        const row = document.createElement('div');
-        row.classList.add('row');
-        for (let j = 0; j < numberCells; ++j) {
-            const cell = document.createElement('div');
-            cell.classList.add('cell');
-            cell.setAttribute('data-value', dataValue++);
+    clearGameField() {
+        main.innerHTML = '';
+    }
+
+    resetGameField(gameStep) {
+        const cells = document.getElementsByClassName('cell');
+        for (let cell of cells) {
+            cell.innerHTML = '';
             cell.addEventListener('click', gameStep)
-            row.appendChild(cell);
         }
-        main.appendChild(row);
     }
+
+    freezeGameField(gameStep) {
+        const cells = document.getElementsByClassName('cell');
+        for (let cell of cells) {
+            cell.removeEventListener('click', gameStep);
+        }
+    }
+
 }
 
-function testCheck() {
-    for (let i = 0; i <= progressGame.length - numberCellsToWin; ++i) {
-        for (let j = 0; j <= progressGame.length - numberCellsToWin; ++j) {
-            if (checkDiagonal(i, j) || checkLines(i, j)) {
-                return true
+class Game {
+
+    constructor(player) {
+        this.gameField = new GameField(4, 3);
+        this.player = player;
+        this.progressGame = [];
+        this.gameStep = this.gameStep.bind(this);
+        this.gameReset = this.gameReset.bind(this);
+        this.startNewGameWithNewSettings = this.startNewGameWithNewSettings.bind(this);
+    }
+
+    newProgressGame() {
+        this.progressGame = [];
+        for (let i = 0; i < this.gameField.lengthGameField; ++i) {
+            this.progressGame.push([]);
+        }
+    }
+
+    changePlayer() {
+        if (this.player === 'X') {
+            this.player = 'O';
+        } else {
+            this.player = 'X';
+        }
+    }
+
+    gameStep(event) {
+        if (!event.target.innerHTML) {
+            event.target.innerHTML = this.player;
+            this.progressGameAddValue(event.target.dataset.value);
+            if (this.checkGame()) {
+                console.log('win: ', this.player);
+                this.endRound(this.gameStep.bind(this));
+                return;
+            }
+            this.changePlayer();
+        }
+    }
+
+    progressGameAddValue(value) {
+        this.progressGame[Math.floor(value / this.gameField.lengthGameField)][value % this.gameField.lengthGameField] = this.player
+    }
+
+    checkDiagonal(positionCheckX, positionCheckY) {
+        let rightDiagonal = true;
+        let leftDiagonal = true;
+        for (let i = 0; i < this.gameField.numberCellsToWin; ++i) {
+            rightDiagonal = rightDiagonal && this.progressGame[positionCheckX + i][positionCheckY + i] === this.player;
+            leftDiagonal = leftDiagonal && this.progressGame[this.gameField.numberCellsToWin + positionCheckX - i - 1][positionCheckY + i] === this.player;
+        } 
+        return rightDiagonal || leftDiagonal;
+    }
+
+    checkLines(positionCheckX, positionCheckY) {
+        for (let x = 0; x < this.gameField.numberCellsToWin; ++x) {
+            let vertical = true;
+            let horizontal = true;
+            for (let y = 0; y < this.gameField.numberCellsToWin; ++y) {
+                vertical = vertical && this.progressGame[y + positionCheckY][x + positionCheckX] === this.player;
+                horizontal = horizontal && this.progressGame[x + positionCheckX][y + positionCheckY] === this.player;
+            }
+            if (vertical || horizontal) {
+                return true;
             }
         }
     }
+
+    checkGame() {
+        for (let i = 0; i <= this.gameField.lengthGameField - this.gameField.numberCellsToWin; ++i) {
+            for (let j = 0; j <= this.gameField.lengthGameField - this.gameField.numberCellsToWin; ++j) {
+                if (this.checkDiagonal(i, j) || this.checkLines(i, j)) {
+                    return true
+                }
+            }
+        }
+    }
+
+    endRound() {
+        this.gameField.freezeGameField(this.gameStep);
+    }
+
+    gameReset() {
+        this.gameField.resetGameField(this.gameStep);
+        this.player = 'X';
+        this.newProgressGame();
+    }
+
+    startNewGame() {
+        this.newProgressGame();
+        this.gameField.drawingGameField(this.gameStep);
+    }
+
+    startNewGameWithNewSettings() {
+        const lengthGameField = Number(document.getElementById('size-field').value);
+        const numberCellsToWin = Number(document.getElementById('number-line-to-win').value);
+        this.player = 'X';
+        this.gameField.clearGameField();
+        this.gameField = new GameField(lengthGameField, numberCellsToWin);
+        this.startNewGame();
+    }
+
 }
 
-function endRound() {
-    const cells = document.getElementsByClassName('cell');
-    for (let cell of cells) {
-        cell.removeEventListener('click', gameStep);
-    }
-}
+let newGame = new Game('X');
 
-function gameReset() {
-    const cells = document.getElementsByClassName('cell');
-    for (let cell of cells) {
-        cell.innerHTML = '';
-        cell.addEventListener('click', gameStep);
-    }
-    player = 'X';
-    progressGame= [];
-    for (let i = 0; i < lengthGameField; ++i) {
-        progressGame.push([])
-    }
-}
+newGame.startNewGame();
 
-function clearGameField() {
-    main.innerHTML = '';
-    progressGame= [];
-    for (let i = 0; i < lengthGameField; ++i) {
-        progressGame.push([])
-    }
-}
+btnChangeSettings.addEventListener('click', newGame.startNewGameWithNewSettings);
 
-function changeSettings() {
-    gameReset();
-    lengthGameField = Number(document.getElementById('size-field').value);
-    numberCellsToWin = Number(document.getElementById('number-line-to-win').value);
-    clearGameField();
-    drawingGameField(lengthGameField);
-}
+btnGameReset.addEventListener('click', newGame.gameReset);
