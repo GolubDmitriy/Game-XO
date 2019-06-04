@@ -1,6 +1,7 @@
 const btnGameReset = document.getElementsByClassName('btn-game-reset')[0];
 const btnChangeSettings = document.getElementById('change-settings');
 const main = document.getElementsByClassName('main')[0];
+const message = document.getElementById('message')
 
 class GameField {
     
@@ -55,10 +56,12 @@ class Game {
         this.gameStep = this.gameStep.bind(this);
         this.gameReset = this.gameReset.bind(this);
         this.startNewGameWithNewSettings = this.startNewGameWithNewSettings.bind(this);
+        this.numberGameMove = 0;
     }
 
     newProgressGame() {
         this.progressGame = [];
+        this.numberGameMove = 0;
         for (let i = 0; i < this.gameField.lengthGameField; ++i) {
             this.progressGame.push([]);
         }
@@ -76,12 +79,18 @@ class Game {
         if (!event.target.innerHTML) {
             event.target.innerHTML = this.player;
             this.progressGameAddValue(event.target.dataset.value);
+            ++this.numberGameMove;
             if (this.checkGame()) {
                 console.log('win: ', this.player);
-                this.endRound(this.gameStep.bind(this));
+                this.endRound('win');
+                return;
+            }
+            if (this.numberGameMove === Math.pow(this.gameField.lengthGameField, 2)) {
+                this.endRound('draw');
                 return;
             }
             this.changePlayer();
+            this.changeMessage();
         }
     }
 
@@ -123,19 +132,22 @@ class Game {
         }
     }
 
-    endRound() {
+    endRound(msg) {
         this.gameField.freezeGameField(this.gameStep);
+        this.changeMessage(msg);
     }
 
     gameReset() {
         this.gameField.resetGameField(this.gameStep);
         this.player = 'X';
         this.newProgressGame();
+        this.changeMessage();
     }
 
     startNewGame() {
         this.newProgressGame();
         this.gameField.drawingGameField(this.gameStep);
+        this.changeMessage();
     }
 
     startNewGameWithNewSettings() {
@@ -145,6 +157,16 @@ class Game {
         this.gameField.clearGameField();
         this.gameField = new GameField(lengthGameField, numberCellsToWin);
         this.startNewGame();
+    }
+
+    changeMessage(resultGame) {
+        if (resultGame === 'win') {
+            message.innerHTML = `Раунд окончен, победил ${this.player}`;
+        } else if (resultGame === 'draw') {
+            message.innerHTML = `Раунд окончен, ничья`;
+        } else {
+            message.innerHTML = `Сейчас ходит ${this.player}`;
+        }
     }
 
 }
