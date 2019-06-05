@@ -151,12 +151,14 @@ class Game {
     }
 
     startNewGameWithNewSettings() {
-        const lengthGameField = Number(document.getElementById('size-field').value);
-        const numberCellsToWin = Number(document.getElementById('number-line-to-win').value);
-        this.player = 'X';
-        this.gameField.clearGameField();
-        this.gameField = new GameField(lengthGameField, numberCellsToWin);
-        this.startNewGame();
+        const lengthGameField = Math.floor(Number(document.getElementById('size-field').value));
+        const numberCellsToWin = Math.floor(Number(document.getElementById('number-line-to-win').value));
+        if (lengthGameField >= 3 && lengthGameField >= numberCellsToWin) {
+            this.player = 'X';
+            this.gameField.clearGameField();
+            this.gameField = new GameField(lengthGameField, numberCellsToWin);
+            this.startNewGame();
+        }
     }
 
     changeMessage(resultGame) {
